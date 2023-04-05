@@ -8,13 +8,23 @@ public class GUI {
     private JTextField kField;
     private JTextField tiField;
     private JTextField tdField;
-    private JTextField periodField;
+    
+    // To be attached with actionlisteners
+    private JTextField hysteresisField;		
     private JTextField amplitudeField;
     private JButton startButton;
     private JButton stopButton;
-
+    private JButton beamButton;
+    private JButton tank1Button;
+    private JButton tank2Button;
+    
+    //Attributes to be sent to Regul.
+    private double relayAmp = 0;
+    private double relayHysteresis = 0;
+    private int processType = 0; // 1, 2, 3 (beam, upper tank, lower tank)
+	
+	// Public gui should take parameters that correspond to the objects to be used in the project
     public GUI() {
-
 
         // create the frame
         frame = new JFrame("Tune PID Controller");
@@ -28,16 +38,18 @@ public class GUI {
         tdField = new JTextField("0.0", 10);
 
         // Create the text fields for the relay
-        periodField = new JTextField("0.0", 10);
+        hysteresisField = new JTextField("0.0", 10);
         amplitudeField = new JTextField("0.0", 10);
 
         // create the start button
         startButton = new JButton("Start");
         stopButton = new JButton("Stop");
+        beamButton = new JButton("Beam");
+        tank1Button = new JButton("Upper Tank");
+        tank2Button = new JButton("Lower Tank");
 
-        ImageIcon icon = new ImageIcon("image.png");
+        
         ImageIcon sineIcon = new ImageIcon("sineWave.png");
-        JLabel iconLabel = new JLabel(icon);
         JLabel graphIcon = new JLabel(sineIcon);
         
 
@@ -62,8 +74,8 @@ public class GUI {
         controllerPanel.add(new JLabel("Real-time Systems"));
         controllerPanel.add(new JLabel("K:"));
         controllerPanel.add(kField);
-        controllerPanel.add(new JLabel("Period:"));
-        controllerPanel.add(periodField);
+        controllerPanel.add(new JLabel("Hysteresis:"));
+        controllerPanel.add(hysteresisField);
         
         controllerPanel.add(new JLabel("Project - PID Autotuner"));
         controllerPanel.add(new JLabel("Ti:"));
@@ -90,34 +102,91 @@ public class GUI {
         relayPanel.add(new JLabel("<html>Please make sure you<br/>set the amplitude<br/> and the frequency of the<br/>relay before initializing<br/>the tuner<html>")); 
         relayPanel.add(startButton);
         relayPanel.add(stopButton);
-        relayPanel.add(new JLabel());
-        relayPanel.add(new JLabel());
-        relayPanel.add(new JLabel());
+        relayPanel.add(beamButton);
+        relayPanel.add(tank1Button);
+        relayPanel.add(tank2Button);
        
         
         frame.add(controllerPanel, BorderLayout.NORTH);
         frame.add(relayPanel, BorderLayout.WEST);
         //frame.add(iconLabel, BorderLayout.SOUTH);
         frame.add(graphIcon, BorderLayout.EAST);
-
+        
+		// -----------------RelayListeners----------------------
+        hysteresisField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                relayHysteresis = Double.parseDouble(hysteresisField.getText());
+                System.out.println("The value of the relayHysteresis attribute is no" + relayHysteresis);
+                System.out.println("The value of the relayAmp attribute is no" + relayAmp);
+            }
+        });
+        	
+        amplitudeField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                relayAmp = Double.parseDouble(amplitudeField.getText());
+                System.out.println("The value of the relayHysteresis attribute is no" + relayHysteresis);
+                System.out.println("The value of the relayAmp attribute is no" + relayAmp);
+            }
+        });
+        
+        // -----------------ButtonListeners----------------------
+        
+        beamButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                processType = 1;
+                beamButton.setBackground(new Color(144, 238, 144));
+                tank1Button.setBackground(Color.LIGHT_GRAY);
+                tank2Button.setBackground(Color.LIGHT_GRAY);
+                System.out.println("The process type is now beam, if response is 1: " + processType);
+            }
+        });
+        
+        tank1Button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                processType = 2;
+                beamButton.setBackground(Color.LIGHT_GRAY);
+                tank1Button.setBackground(new Color(144, 238, 144));
+                tank2Button.setBackground(Color.LIGHT_GRAY);
+                System.out.println("The process type is now upper tank, if response is 2: " + processType);
+            }
+        });
+        
+        tank2Button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                processType = 3;
+                beamButton.setBackground(Color.LIGHT_GRAY);
+                tank1Button.setBackground(Color.LIGHT_GRAY);
+                tank2Button.setBackground(new Color(144, 238, 144));
+                System.out.println("The process type is now upper tank, if response is 2: " + processType);
+            }
+        });
+        
         // add an action listener to the start button
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //double k = Double.parseDouble(kField.getText());
-                //double ti = Double.parseDouble(tiField.getText());
-                //double td = Double.parseDouble(tdField.getText());
-                //double period = Double.parseDouble(periodField.getText());
-                //double amplitude = Double.parseDouble(amplitudeField.getText());
-
+                // Check is starting conditions have been met
+                if (relayAmp != 0 && relayHysteresis != 0 && processType != 0 ) {
+					startButton.setBackground(new Color(144, 238, 144));
+					// here the regul method should be initialized with the regul.init(method);
+				} else {
+					startButton.setBackground(Color.RED);
+				}
             }
         });
-
-        // add an action listener to the stop button
-        startButton.addActionListener(new ActionListener() {
+        
+              // add an action listener to the stop button
+        tank1Button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Stop all outputs
+                // Set attribute
             }
         });
+              // add an action listener to the stop button
+        tank2Button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Set attribute
+            }
+        });
+        
 
         frame.setVisible(true);
     }
