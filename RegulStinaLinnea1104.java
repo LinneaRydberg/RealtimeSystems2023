@@ -117,7 +117,7 @@ public class RegulStinaLinnea extends Thread {
                             pi.updateState(u);
 
                         }
-                        else{ //UNSTABLE 
+                        else{ //UNSTABLE -->RELAY
 
                           /*   if(Math.abs(yref-y)<=hyst) {  
                                 newstate=false; 
